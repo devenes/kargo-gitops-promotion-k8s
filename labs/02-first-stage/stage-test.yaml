@@ -1,0 +1,98 @@
+# Kargo Stage for test environment
+# This Stage receives Freight from the Warehouse and promotes it automatically
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: test
+  namespace: kargo-lab
+  labels:
+    environment: test
+spec:
+  # Define what Freight this Stage should receive
+  requestedFreight:
+  - origin:
+      # Request Freight from the demo-app Warehouse
+      kind: Warehouse
+      name: demo-app
+    sources:
+      # Receive Freight directly from the Warehouse
+      direct: true
+  
+  # Promotion template defines how to promote Freight to this Stage
+  promotionTemplate:
+    spec:
+      steps:
+      
+      # Step 1: Clone Git repositories
+      - uses: git-clone
+        config:
+          # Repository to clone
+          repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+          
+          # Checkout multiple branches
+          checkout:
+          # Clone main branch (source of truth)
+          - branch: main
+            path: ./src
+          
+          # Clone/create stage/test branch (target for this stage)
+          - branch: stage/test
+            create: true  # Create branch if it doesn't exist
+            path: ./out
+      
+      # Step 2: Clear the output directory
+      # This ensures we start with a clean slate
+      - uses: git-clear
+        config:
+          path: ./out
+      
+      # Step 3: Update image tag in Kustomize
+      - uses: kustomize-set-image
+        config:
+          # Path to Kustomize overlay
+          path: ./src/stages/test
+          
+          # Images to update
+          images:
+          - image: nginx
+            # Use expression language to get tag from Freight
+            # This retrieves the tag of the nginx image from the promoted Freight
+            tag: ${{ imageFrom(repoURL="nginx").Tag }}
+      
+      # Step 4: Build Kustomize manifests
+      - uses: kustomize-build
+        config:
+          # Input path (where kustomization.yaml is)
+          path: ./src/stages/test
+          
+          # Output path (where to write rendered manifests)
+          outPath: ./out
+      
+      # Step 5: Commit changes to Git
+      - uses: git-commit
+        config:
+          # Path to commit
+          path: ./out
+          
+          # Generate commit message from previous steps
+          # This will include the image tag that was set
+          messageFromSteps:
+          - kustomize-set-image
+      
+      # Step 6: Push changes to stage/test branch
+      - uses: git-push
+        config:
+          # Path to push
+          path: ./out
+          
+          # Target branch
+          targetBranch: stage/test
+      
+      # Step 7: Update ArgoCD Application
+      - uses: argocd-update
+        config:
+          # Applications to update
+          apps:
+          - name: demo-app-test
+            namespace: argocd
+

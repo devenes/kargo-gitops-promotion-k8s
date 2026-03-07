@@ -1,0 +1,21 @@
+# Updated Kargo Project with UAT auto-promotion enabled
+# This replaces the Project from Lab 01
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  name: kargo-lab
+spec:
+  # Promotion policies define which stages get automatic promotion
+  promotionPolicies:
+  
+  # Test stage: auto-promote from Warehouse
+  - stage: test
+    autoPromotionEnabled: true
+  
+  # UAT stage: auto-promote from test stage
+  - stage: uat
+    autoPromotionEnabled: true
+  
+  # Production stage: NO auto-promotion (requires manual approval)
+  # Note: prod is intentionally NOT listed here to enforce manual gates
+

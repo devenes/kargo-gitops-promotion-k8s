@@ -1,0 +1,76 @@
+# Kargo Stage for UAT environment
+# This Stage receives Freight from the test stage (not directly from Warehouse)
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: uat
+  namespace: kargo-lab
+  labels:
+    environment: uat
+spec:
+  # Define what Freight this Stage should receive
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: demo-app
+    sources:
+      # Receive Freight from upstream test stage
+      # This creates the promotion pipeline: Warehouse → test → uat
+      stages:
+      - test
+  
+  # Promotion template defines how to promote Freight to this Stage
+  promotionTemplate:
+    spec:
+      steps:
+      
+      # Step 1: Clone Git repositories
+      - uses: git-clone
+        config:
+          repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/uat
+            create: true
+            path: ./out
+      
+      # Step 2: Clear the output directory
+      - uses: git-clear
+        config:
+          path: ./out
+      
+      # Step 3: Update image tag in Kustomize
+      - uses: kustomize-set-image
+        config:
+          path: ./src/stages/uat
+          images:
+          - image: nginx
+            tag: ${{ imageFrom(repoURL="nginx").Tag }}
+      
+      # Step 4: Build Kustomize manifests
+      - uses: kustomize-build
+        config:
+          path: ./src/stages/uat
+          outPath: ./out
+      
+      # Step 5: Commit changes to Git
+      - uses: git-commit
+        config:
+          path: ./out
+          messageFromSteps:
+          - kustomize-set-image
+      
+      # Step 6: Push changes to stage/uat branch
+      - uses: git-push
+        config:
+          path: ./out
+          targetBranch: stage/uat
+      
+      # Step 7: Update ArgoCD Application
+      - uses: argocd-update
+        config:
+          apps:
+          - name: demo-app-uat
+            namespace: argocd
+

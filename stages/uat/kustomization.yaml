@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: demo-app-uat
+
+namespace: kargo-lab-uat
+
+resources:
+  - ../../base
+
+commonLabels:
+  environment: uat
+  stage: uat
+
+namePrefix: uat-
+
+# UAT environment specific configurations
+replicas:
+  - name: demo-app
+    count: 2
+
+# Add UAT-specific annotations
+commonAnnotations:
+  kargo.akuity.io/stage: uat
+

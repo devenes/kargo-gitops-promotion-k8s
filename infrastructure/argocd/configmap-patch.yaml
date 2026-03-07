@@ -1,0 +1,11 @@
+# Patch for argocd-cmd-params-cm ConfigMap
+# Apply after installing ArgoCD to enable insecure mode for OpenShift Route
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+  namespace: argocd
+data:
+  # Disable internal TLS for OpenShift Route compatibility
+  server.insecure: "true"
+

@@ -1,0 +1,79 @@
+# Kargo Stage for Production environment
+# This Stage receives Freight from the UAT stage and requires MANUAL approval
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: prod
+  namespace: kargo-lab
+  labels:
+    environment: prod
+spec:
+  # Define what Freight this Stage should receive
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: demo-app
+    sources:
+      # Receive Freight from upstream UAT stage
+      # This creates the promotion pipeline: Warehouse → test → uat → prod
+      stages:
+      - uat
+  
+  # Promotion template defines how to promote Freight to this Stage
+  # Note: This Stage does NOT have auto-promotion enabled in the Project
+  # Promotions must be triggered manually
+  promotionTemplate:
+    spec:
+      steps:
+      
+      # Step 1: Clone Git repositories
+      - uses: git-clone
+        config:
+          repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+          checkout:
+          - branch: main
+            path: ./src
+          - branch: stage/prod
+            create: true
+            path: ./out
+      
+      # Step 2: Clear the output directory
+      - uses: git-clear
+        config:
+          path: ./out
+      
+      # Step 3: Update image tag in Kustomize
+      - uses: kustomize-set-image
+        config:
+          path: ./src/stages/prod
+          images:
+          - image: nginx
+            tag: ${{ imageFrom(repoURL="nginx").Tag }}
+      
+      # Step 4: Build Kustomize manifests
+      # Note: Production uses 3 replicas (configured in stages/prod/kustomization.yaml)
+      - uses: kustomize-build
+        config:
+          path: ./src/stages/prod
+          outPath: ./out
+      
+      # Step 5: Commit changes to Git
+      - uses: git-commit
+        config:
+          path: ./out
+          messageFromSteps:
+          - kustomize-set-image
+      
+      # Step 6: Push changes to stage/prod branch
+      - uses: git-push
+        config:
+          path: ./out
+          targetBranch: stage/prod
+      
+      # Step 7: Update ArgoCD Application
+      - uses: argocd-update
+        config:
+          apps:
+          - name: demo-app-prod
+            namespace: argocd
+

@@ -1,0 +1,16 @@
+# Kargo Project for the learning lab
+# Creating this Project will automatically create a namespace named "kargo-lab"
+# DO NOT pre-create the namespace - Kargo manages it
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Project
+metadata:
+  name: kargo-lab
+spec:
+  # Promotion policies define which stages get automatic promotion
+  promotionPolicies:
+  - stage: test
+    autoPromotionEnabled: true
+  # Note: uat and prod stages will be added in later labs
+  # uat will have auto-promotion enabled
+  # prod will require manual approval (no auto-promotion)
+

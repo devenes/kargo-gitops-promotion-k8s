@@ -1,0 +1,48 @@
+# Warehouse defines what artifacts Kargo should track
+# It subscribes to container images and Git repositories
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: demo-app
+  namespace: kargo-lab
+spec:
+  # How often to check for new artifacts
+  interval: 5m
+  
+  # Subscriptions define what to track
+  subscriptions:
+  
+  # Subscribe to nginx container image
+  - image:
+      # Image repository (without tag)
+      repoURL: nginx
+      
+      # Version constraint using semver
+      # This will match nginx:1.25-alpine and similar versions
+      constraint: 1.25-alpine
+      
+      # Limit how many versions to discover
+      # Keeps the Freight list manageable
+      discoveryLimit: 5
+      
+      # Optional: Specify image pull secrets if needed
+      # imagePullSecrets:
+      # - name: my-registry-secret
+  
+  # Subscribe to Git repository
+  # Note: For Lab 01, we'll focus on image discovery
+  # Git subscription will be used in Lab 02 when we have the actual repo
+  # - git:
+  #     repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+  #     branch: main
+      
+      # Optional: Include only specific paths
+      # includePaths:
+      # - stages/
+      # - base/
+      
+      # Optional: Exclude specific paths
+      # excludePaths:
+      # - docs/
+      # - "*.md"
+

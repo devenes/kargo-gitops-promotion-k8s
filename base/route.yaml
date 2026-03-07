@@ -1,0 +1,21 @@
+# OpenShift Route for external access
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: demo-app
+  labels:
+    app: demo-app
+    app.kubernetes.io/name: demo-app
+    app.kubernetes.io/component: web
+spec:
+  to:
+    kind: Service
+    name: demo-app
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
+

@@ -1,0 +1,36 @@
+# Updated Warehouse with Git subscription enabled
+# Apply this after pushing the repository to GitHub
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: demo-app
+  namespace: kargo-lab
+spec:
+  # How often to check for new artifacts
+  interval: 5m
+  
+  # Subscriptions define what to track
+  subscriptions:
+  
+  # Subscribe to nginx container image
+  - image:
+      # Image repository (without tag)
+      repoURL: nginx
+      
+      # Version constraint using semver
+      # This will match nginx:1.25-alpine and similar versions
+      constraint: 1.25-alpine
+      
+      # Limit how many versions to discover
+      # Keeps the Freight list manageable
+      discoveryLimit: 5
+  
+  # Subscribe to Git repository
+  - git:
+      repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+      
+      # Optional: Include only specific paths
+      # This helps Kargo detect changes only in relevant directories
+      includePaths:
+      - stages/
+      - base/
