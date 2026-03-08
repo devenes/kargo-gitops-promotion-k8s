@@ -23331,14 +23331,17 @@ spec:
         - ""
         - --appendonly
         - "no"
-        - --requirepass $(REDIS_PASSWORD)
+        - --requirepass
+        - $(REDIS_PASSWORD)
+        command:
+        - redis-server
         env:
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
               key: auth
               name: argocd-redis
-        image: redis:7.0.15-alpine
+        image: image-registry.openshift-image-registry.svc:5000/openshift/redis:6-el9
         imagePullPolicy: Always
         name: redis
         ports:
@@ -23364,13 +23367,8 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
-          seccompProfile:
-            type: RuntimeDefault
       securityContext:
         runAsNonRoot: true
-        runAsUser: 999
-        seccompProfile:
-          type: RuntimeDefault
       serviceAccountName: argocd-redis
 ---
 apiVersion: apps/v1

@@ -31,7 +31,7 @@ spec:
         config:
           repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
           checkout:
-          - branch: main
+          - branch: master
             path: ./src
           - branch: stage/prod
             create: true
@@ -42,27 +42,18 @@ spec:
         config:
           path: ./out
       
-      # Step 3: Update image tag in Kustomize
-      - uses: kustomize-set-image
-        config:
-          path: ./src/stages/prod
-          images:
-          - image: nginx
-            tag: ${{ imageFrom(repoURL="nginx").Tag }}
-      
-      # Step 4: Build Kustomize manifests
+      # Step 3: Build Kustomize manifests
       # Note: Production uses 3 replicas (configured in stages/prod/kustomization.yaml)
       - uses: kustomize-build
         config:
           path: ./src/stages/prod
           outPath: ./out
-      
-      # Step 5: Commit changes to Git
+
+      # Step 4: Commit changes to Git
       - uses: git-commit
         config:
           path: ./out
-          messageFromSteps:
-          - kustomize-set-image
+          message: "chore: promote to prod"
       
       # Step 6: Push changes to stage/prod branch
       - uses: git-push

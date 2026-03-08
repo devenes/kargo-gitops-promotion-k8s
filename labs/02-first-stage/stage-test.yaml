@@ -31,8 +31,7 @@ spec:
           
           # Checkout multiple branches
           checkout:
-          # Clone main branch (source of truth)
-          - branch: main
+          - branch: master
             path: ./src
           
           # Clone/create stage/test branch (target for this stage)
@@ -46,38 +45,17 @@ spec:
         config:
           path: ./out
       
-      # Step 3: Update image tag in Kustomize
-      - uses: kustomize-set-image
-        config:
-          # Path to Kustomize overlay
-          path: ./src/stages/test
-          
-          # Images to update
-          images:
-          - image: nginx
-            # Use expression language to get tag from Freight
-            # This retrieves the tag of the nginx image from the promoted Freight
-            tag: ${{ imageFrom(repoURL="nginx").Tag }}
-      
-      # Step 4: Build Kustomize manifests
+      # Step 3: Build Kustomize manifests
       - uses: kustomize-build
         config:
-          # Input path (where kustomization.yaml is)
           path: ./src/stages/test
-          
-          # Output path (where to write rendered manifests)
           outPath: ./out
-      
-      # Step 5: Commit changes to Git
+
+      # Step 4: Commit changes to Git
       - uses: git-commit
         config:
-          # Path to commit
           path: ./out
-          
-          # Generate commit message from previous steps
-          # This will include the image tag that was set
-          messageFromSteps:
-          - kustomize-set-image
+          message: "chore: promote to test"
       
       # Step 6: Push changes to stage/test branch
       - uses: git-push

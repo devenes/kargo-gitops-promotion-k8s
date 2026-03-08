@@ -87,13 +87,13 @@ STAGE:.spec.stage,\
 FREIGHT:.spec.freight,\
 PHASE:.status.phase,\
 AGE:.metadata.creationTimestamp 2>/dev/null | head -10
-    
+
     # Count by phase
     echo ""
     SUCCEEDED=$(oc get promotions -n kargo-lab -o jsonpath='{.items[?(@.status.phase=="Succeeded")].metadata.name}' 2>/dev/null | wc -w)
     RUNNING=$(oc get promotions -n kargo-lab -o jsonpath='{.items[?(@.status.phase=="Running")].metadata.name}' 2>/dev/null | wc -w)
     FAILED=$(oc get promotions -n kargo-lab -o jsonpath='{.items[?(@.status.phase=="Failed")].metadata.name}' 2>/dev/null | wc -w)
-    
+
     echo "Summary:"
     echo "  Succeeded: $SUCCEEDED"
     echo "  Running: $RUNNING"
@@ -114,4 +114,3 @@ echo "For detailed view, use:"
 echo "  kargo get freight --project kargo-lab"
 echo "  kargo get stages --project kargo-lab"
 echo "  kargo get promotions --project kargo-lab"
-

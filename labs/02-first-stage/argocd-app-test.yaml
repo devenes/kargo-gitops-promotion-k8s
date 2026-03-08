@@ -25,8 +25,8 @@ spec:
     # Target branch - Kargo will create and manage this branch
     targetRevision: stage/test
     
-    # Path to Kustomize overlay
-    path: stages/test
+    # Rendered manifests pushed by Kargo to the root of stage/test branch
+    path: .
   
   # Destination configuration
   destination:

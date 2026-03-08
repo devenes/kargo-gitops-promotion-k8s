@@ -12,29 +12,13 @@ spec:
   # Subscriptions define what to track
   subscriptions:
   
-  # Subscribe to nginx container image
-  - image:
-      # Image repository (without tag)
-      repoURL: nginx
-      
-      # Version constraint using semver
-      # This will match nginx:1.25-alpine and similar versions
-      constraint: 1.25-alpine
-      
-      # Limit how many versions to discover
-      # Keeps the Freight list manageable
-      discoveryLimit: 5
-      
-      # Optional: Specify image pull secrets if needed
-      # imagePullSecrets:
-      # - name: my-registry-secret
-  
-  # Subscribe to Git repository
-  # Note: For Lab 01, we'll focus on image discovery
-  # Git subscription will be used in Lab 02 when we have the actual repo
-  # - git:
-  #     repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
-  #     branch: main
+  # Subscribe to Git repository only.
+  # Image tracking is disabled because Docker Hub is rate-limited on this cluster
+  # and the internal registry is not accessible to Kargo without TLS configuration.
+  # The deployment image is pinned directly in base/deployment.yaml.
+  - git:
+      repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+      branch: master
       
       # Optional: Include only specific paths
       # includePaths:

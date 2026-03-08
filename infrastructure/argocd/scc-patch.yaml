@@ -1,0 +1,15 @@
+# Grant anyuid SCC to argocd-redis service account
+# Required on OpenShift because the upstream Redis image runs as UID 999
+# which falls outside the restricted namespace UID range
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: argocd-redis-anyuid
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid
+subjects:
+- kind: ServiceAccount
+  name: argocd-redis
+  namespace: argocd

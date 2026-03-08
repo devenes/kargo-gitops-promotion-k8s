@@ -144,4 +144,3 @@ else
     echo -e "${RED}✗ Failed to create Promotion${NC}"
     exit 1
 fi
-
