@@ -11,11 +11,14 @@ spec:
   # Define what Freight this Stage should receive
   requestedFreight:
   - origin:
-      # Request Freight from the demo-app Warehouse
       kind: Warehouse
       name: demo-app
     sources:
-      # Receive Freight directly from the Warehouse
+      direct: true
+  - origin:
+      kind: Warehouse
+      name: db
+    sources:
       direct: true
   
   # Promotion template defines how to promote Freight to this Stage

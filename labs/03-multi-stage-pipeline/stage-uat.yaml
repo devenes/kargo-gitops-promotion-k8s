@@ -14,8 +14,12 @@ spec:
       kind: Warehouse
       name: demo-app
     sources:
-      # Receive Freight from upstream test stage
-      # This creates the promotion pipeline: Warehouse → test → uat
+      stages:
+      - test
+  - origin:
+      kind: Warehouse
+      name: db
+    sources:
       stages:
       - test
 
