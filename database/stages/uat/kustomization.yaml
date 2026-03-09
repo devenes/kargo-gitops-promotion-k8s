@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: db-uat
+namespace: kargo-lab-uat
+resources:
+  - ../../base
+namePrefix: uat-
+commonLabels:
+  environment: uat
+  stage: uat
+commonAnnotations:
+  kargo.akuity.io/stage: uat

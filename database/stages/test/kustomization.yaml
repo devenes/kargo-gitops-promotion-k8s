@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  name: db-test
+namespace: kargo-lab-test
+resources:
+  - ../../base
+namePrefix: test-
+commonLabels:
+  environment: test
+  stage: test
+commonAnnotations:
+  kargo.akuity.io/stage: test
