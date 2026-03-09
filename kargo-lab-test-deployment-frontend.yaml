@@ -1,31 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
   labels:
     app: frontend
+    environment: test
+    stage: test
+  name: frontend
+  namespace: kargo-lab-test
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: frontend
+      environment: test
+      stage: test
   template:
     metadata:
       labels:
         app: frontend
+        environment: test
+        stage: test
     spec:
       containers:
-      - name: frontend
-        image: nginx:1.25-alpine
+      - image: nginx:1.25-alpine
+        name: frontend
         ports:
         - containerPort: 80
           name: http
         securityContext:
           allowPrivilegeEscalation: false
         volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
+        - mountPath: /usr/share/nginx/html
+          name: html
       volumes:
-      - name: html
-        configMap:
+      - configMap:
           name: frontend-html
+        name: html
