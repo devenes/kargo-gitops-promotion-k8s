@@ -44,3 +44,45 @@ subjects:
 - kind: ServiceAccount
   name: kargo-management-controller
   namespace: kargo
+---
+# OpenShift RBAC patch for Kargo controller (auto-promotion)
+#
+# Problem: When auto-promoting, kargo-controller creates a Promotion with an
+# ownerReference pointing to the Stage with blockOwnerDeletion=true.
+# OpenShift requires the creator to have update on stages/finalizers for this:
+#
+#   "cannot set blockOwnerDeletion if an ownerReference refers to a resource
+#    you can't set finalizers on"
+#
+# Impact: Auto-promotion fails with Forbidden even though ProjectConfig is correct.
+#
+# Fix: Grant kargo-controller update on stages/finalizers and promotions/finalizers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kargo-controller-openshift-patch
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: kargo
+    app.kubernetes.io/managed-by: manual
+rules:
+- apiGroups: ["kargo.akuity.io"]
+  resources: ["stages/finalizers", "promotions/finalizers"]
+  verbs: ["update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kargo-controller-openshift-patch
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: kargo
+    app.kubernetes.io/managed-by: manual
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kargo-controller-openshift-patch
+subjects:
+- kind: ServiceAccount
+  name: kargo-controller
+  namespace: kargo
