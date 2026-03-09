@@ -1,0 +1,26 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    kargo.akuity.io/stage: uat
+  labels:
+    app: demo-app
+    app.kubernetes.io/component: web
+    app.kubernetes.io/managed-by: kargo
+    app.kubernetes.io/name: demo-app
+    app.kubernetes.io/part-of: kargo-learning-lab
+    environment: uat
+    stage: uat
+  name: uat-demo-app
+  namespace: kargo-lab-uat
+spec:
+  port:
+    targetPort: http
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: demo-app
+    weight: 100
+  wildcardPolicy: None
