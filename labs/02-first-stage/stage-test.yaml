@@ -69,8 +69,9 @@ spec:
       # Step 7: Update ArgoCD Application
       - uses: argocd-update
         config:
-          # Applications to update
           apps:
           - name: demo-app-test
+            namespace: argocd
+          - name: db-test
             namespace: argocd
 

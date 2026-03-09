@@ -64,4 +64,6 @@ spec:
           apps:
           - name: demo-app-uat
             namespace: argocd
+          - name: db-uat
+            namespace: argocd
 

@@ -67,4 +67,6 @@ spec:
           apps:
           - name: demo-app-prod
             namespace: argocd
+          - name: db-prod
+            namespace: argocd
 

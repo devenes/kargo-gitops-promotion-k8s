@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: db-uat
   namespace: argocd
+  annotations:
+    kargo.akuity.io/authorized-stage: kargo-lab:uat
   labels:
     app.kubernetes.io/name: db
     app.kubernetes.io/instance: uat
