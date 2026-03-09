@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  branch: ""
+  commit: ""
+  stage: ""
+kind: ConfigMap
+metadata:
+  labels:
+    environment: uat
+    stage: uat
+  name: frontend-version
+  namespace: kargo-lab-uat
