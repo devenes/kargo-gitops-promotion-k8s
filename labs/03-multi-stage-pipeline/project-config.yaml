@@ -1,0 +1,26 @@
+# ProjectConfig defines auto-promotion policies for the kargo-lab project.
+#
+# In Kargo v1.9+, promotionPolicies moved from the Project resource (which has
+# an empty spec) to this dedicated ProjectConfig resource in the project namespace.
+# The old Project.spec.promotionPolicies field is silently ignored by the API server.
+apiVersion: kargo.akuity.io/v1alpha1
+kind: ProjectConfig
+metadata:
+  name: kargo-lab
+  namespace: kargo-lab
+spec:
+  promotionPolicies:
+
+  # demo-app + db pipeline
+  - stage: test
+    autoPromotionEnabled: true
+  - stage: uat
+    autoPromotionEnabled: true
+  # prod: manual only (not listed)
+
+  # frontend pipeline
+  - stage: frontend-test
+    autoPromotionEnabled: true
+  - stage: frontend-uat
+    autoPromotionEnabled: true
+  # frontend-prod: manual only (not listed)

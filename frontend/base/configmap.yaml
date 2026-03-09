@@ -10,5 +10,6 @@ data:
     <body>
       <h1>Frontend App</h1>
       <p>Environment: <strong>base</strong></p>
+      <p>Auto-promotion: enabled via ProjectConfig</p>
     </body>
     </html>
