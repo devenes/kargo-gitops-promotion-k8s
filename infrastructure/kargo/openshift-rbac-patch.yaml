@@ -1,0 +1,46 @@
+# OpenShift RBAC patch for Kargo management controller
+#
+# Problem: On OpenShift, setting an ownerRef on a namespace requires the ability
+# to delete that namespace (Kubernetes enforces this to prevent orphaned resources).
+# The default kargo-management-controller ClusterRole includes create/get/list/patch
+# on namespaces but NOT delete, causing the Kargo Project to stay Ready=False:
+#
+#   "Failed to ensure existence of project namespace: error patching namespace
+#    with project as owner: cannot set an ownerRef on a resource you can't delete"
+#
+# Impact: Ready=False suppresses auto-promotion policies defined in the Project.
+#
+# Fix: Grant the kargo-management-controller ServiceAccount delete on namespaces
+# via an additive ClusterRole + ClusterRoleBinding (does not modify the Helm-managed
+# kargo-management-controller ClusterRole, so Helm upgrades won't revert this).
+#
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kargo-management-controller-openshift-patch
+  labels:
+    app.kubernetes.io/component: management-controller
+    app.kubernetes.io/instance: kargo
+    app.kubernetes.io/managed-by: manual
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kargo-management-controller-openshift-patch
+  labels:
+    app.kubernetes.io/component: management-controller
+    app.kubernetes.io/instance: kargo
+    app.kubernetes.io/managed-by: manual
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kargo-management-controller-openshift-patch
+subjects:
+- kind: ServiceAccount
+  name: kargo-management-controller
+  namespace: kargo
