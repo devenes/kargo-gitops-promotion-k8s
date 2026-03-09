@@ -1,5 +1,11 @@
 # Kargo Stage for frontend production environment
-# Receives Freight from the frontend-uat stage (MANUAL promotion required)
+# Demonstrates:
+#   - Manual promotion gate (no autoPromotionEnabled in Project)
+#   - git-open-pr + git-wait-for-pr: PR-based GitOps workflow
+#     Instead of pushing directly to stage/frontend-prod, Kargo opens a Pull Request.
+#     A human reviews and merges the PR → Kargo detects the merge → ArgoCD syncs.
+#     This is the recommended pattern for production in regulated environments.
+#   - yaml-update version stamp for audit trail
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
 metadata:
@@ -23,11 +29,13 @@ spec:
 
       # Step 1: Clone Git repositories
       - uses: git-clone
+        as: clone
         config:
           repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
           checkout:
           - branch: master
             path: ./src
+          # Check out a temporary branch for the PR (not the target branch directly)
           - branch: stage/frontend-prod
             create: true
             path: ./out
@@ -37,27 +45,58 @@ spec:
         config:
           path: ./out
 
-      # Step 3: Build Kustomize manifests
-      # Production uses 3 replicas (configured in frontend/stages/prod/kustomization.yaml)
+      # Step 3: Render Kustomize manifests for prod overlay (3 replicas)
       - uses: kustomize-build
         config:
           path: ./src/frontend/stages/prod
           outPath: ./out
 
-      # Step 4: Commit changes to Git
+      # Step 4: Stamp promotion metadata
+      - uses: yaml-update
+        as: version-stamp
+        config:
+          path: ./out/version.yaml
+          updates:
+          - key: promoted.commit
+            value: ${{ commitFrom("https://github.com/devenes/kargo-gitops-promotion-k8s", "master").ID }}
+          - key: promoted.stage
+            value: prod
+          - key: promoted.branch
+            value: stage/frontend-prod
+
+      # Step 5: Commit rendered manifests to the PR branch
       - uses: git-commit
+        as: commit
         config:
           path: ./out
           message: "chore: promote frontend to prod"
 
-      # Step 5: Push changes to stage/frontend-prod branch
-      - uses: git-push
+      # Step 6: Open a Pull Request instead of pushing directly
+      # Teaches: git-open-pr — Kargo pushes to a temporary branch and opens a PR
+      # targeting stage/frontend-prod. A human must review and MERGE the PR.
+      - uses: git-open-pr
+        as: open-pr
         config:
-          path: ./out
+          repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+          sourceBranch: ${{ outputs.push.branch }}   # ← step output expression
           targetBranch: stage/frontend-prod
+          title: "chore: promote frontend to prod [${{ commitFrom('https://github.com/devenes/kargo-gitops-promotion-k8s', 'master').ShortID }}]"
+          createTargetBranch: true
 
-      # Step 6: Update ArgoCD Application
+      # Step 7: Wait for the PR to be merged before continuing
+      # Teaches: git-wait-for-pr — Kargo polls the PR status.
+      # The promotion is PAUSED here until the PR is merged or closed.
+      # If the PR is closed without merging, the promotion fails.
+      - uses: git-wait-for-pr
+        as: wait-pr
+        config:
+          repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+          prNumber: ${{ outputs['open-pr'].prNumber }}  # ← pass PR number from previous step
+          timeout: 24h                                   # promotion expires if not merged in 24h
+
+      # Step 8: Update ArgoCD Application after PR merge
       - uses: argocd-update
+        as: argocd
         config:
           apps:
           - name: frontend-prod

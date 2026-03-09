@@ -1,5 +1,9 @@
 # Kargo Stage for frontend test environment
-# Receives Freight directly from the frontend-app Warehouse (auto-promoted)
+# Demonstrates:
+#   - Direct Warehouse → Stage auto-promotion
+#   - kustomize-build for manifest rendering
+#   - http step for post-deployment health check
+#   - Step output expressions: ${{ outputs.<step>.* }}
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
 metadata:
@@ -21,7 +25,9 @@ spec:
       steps:
 
       # Step 1: Clone Git repositories
+      # Checks out master (source) and stage/frontend-test (output) in parallel paths
       - uses: git-clone
+        as: clone                          # ← named step: outputs referenceable downstream
         config:
           repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
           checkout:
@@ -31,32 +37,47 @@ spec:
             create: true
             path: ./out
 
-      # Step 2: Clear the output directory
+      # Step 2: Clear the output directory for a clean render
       - uses: git-clear
         config:
           path: ./out
 
-      # Step 3: Build Kustomize manifests
+      # Step 3: Render Kustomize manifests for the test overlay
       - uses: kustomize-build
         config:
           path: ./src/frontend/stages/test
           outPath: ./out
 
-      # Step 4: Commit changes to Git
+      # Step 4: Commit rendered manifests
+      # Uses a static message; swap for ${{ commitFrom("master").ShortID }} once supported
       - uses: git-commit
+        as: commit
         config:
           path: ./out
           message: "chore: promote frontend to test"
 
-      # Step 5: Push changes to stage/frontend-test branch
+      # Step 5: Push to stage/frontend-test branch
       - uses: git-push
+        as: push
         config:
           path: ./out
           targetBranch: stage/frontend-test
 
-      # Step 6: Update ArgoCD Application
+      # Step 6: Trigger ArgoCD sync and wait for Healthy
       - uses: argocd-update
+        as: argocd
         config:
           apps:
           - name: frontend-test
             namespace: argocd
+
+      # Step 7: HTTP health check — verifies the frontend pod actually responds
+      # Teaches: post-promotion smoke testing using the http built-in step
+      # The step fails the promotion if the service is unreachable or returns non-2xx
+      - uses: http
+        as: healthcheck
+        config:
+          method: GET
+          url: http://frontend.kargo-lab-test.svc.cluster.local
+          successExpression: response.status == 200
+          timeout: 30s

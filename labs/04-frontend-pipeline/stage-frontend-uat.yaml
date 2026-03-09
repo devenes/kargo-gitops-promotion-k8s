@@ -1,5 +1,8 @@
 # Kargo Stage for frontend UAT environment
-# Receives Freight from the frontend-test stage (auto-promoted)
+# Demonstrates:
+#   - Upstream stage chaining (receives from frontend-test)
+#   - yaml-update step to stamp promotion metadata into a version file
+#   - http step for post-deployment health check
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
 metadata:
@@ -23,6 +26,7 @@ spec:
 
       # Step 1: Clone Git repositories
       - uses: git-clone
+        as: clone
         config:
           repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
           checkout:
@@ -37,27 +41,54 @@ spec:
         config:
           path: ./out
 
-      # Step 3: Build Kustomize manifests
+      # Step 3: Render Kustomize manifests for the uat overlay (2 replicas)
       - uses: kustomize-build
         config:
           path: ./src/frontend/stages/uat
           outPath: ./out
 
-      # Step 4: Commit changes to Git
+      # Step 4: Stamp promotion metadata into a version.yaml file
+      # Teaches: yaml-update step for writing non-Kustomize config values
+      # Useful for tracking which commit is deployed in each environment
+      - uses: yaml-update
+        as: version-stamp
+        config:
+          path: ./out/version.yaml
+          updates:
+          - key: promoted.commit
+            value: ${{ commitFrom("https://github.com/devenes/kargo-gitops-promotion-k8s", "master").ID }}
+          - key: promoted.stage
+            value: uat
+          - key: promoted.branch
+            value: stage/frontend-uat
+
+      # Step 5: Commit rendered manifests + version stamp
       - uses: git-commit
+        as: commit
         config:
           path: ./out
           message: "chore: promote frontend to uat"
 
-      # Step 5: Push changes to stage/frontend-uat branch
+      # Step 6: Push to stage/frontend-uat branch
       - uses: git-push
+        as: push
         config:
           path: ./out
           targetBranch: stage/frontend-uat
 
-      # Step 6: Update ArgoCD Application
+      # Step 7: Trigger ArgoCD sync
       - uses: argocd-update
+        as: argocd
         config:
           apps:
           - name: frontend-uat
             namespace: argocd
+
+      # Step 8: HTTP health check against UAT service
+      - uses: http
+        as: healthcheck
+        config:
+          method: GET
+          url: http://frontend.kargo-lab-uat.svc.cluster.local
+          successExpression: response.status == 200
+          timeout: 30s

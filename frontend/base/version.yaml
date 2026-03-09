@@ -1,0 +1,6 @@
+# This file is updated automatically by Kargo during each promotion.
+# It serves as an audit trail showing which commit is running in each environment.
+promoted:
+  commit: ""
+  stage: ""
+  branch: ""
