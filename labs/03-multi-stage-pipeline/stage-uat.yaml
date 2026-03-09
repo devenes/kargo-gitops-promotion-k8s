@@ -18,12 +18,12 @@ spec:
       # This creates the promotion pipeline: Warehouse → test → uat
       stages:
       - test
-  
+
   # Promotion template defines how to promote Freight to this Stage
   promotionTemplate:
     spec:
       steps:
-      
+
       # Step 1: Clone Git repositories
       - uses: git-clone
         config:
@@ -34,12 +34,12 @@ spec:
           - branch: stage/uat
             create: true
             path: ./out
-      
+
       # Step 2: Clear the output directory
       - uses: git-clear
         config:
           path: ./out
-      
+
       # Step 3: Build Kustomize manifests
       - uses: kustomize-build
         config:
@@ -51,13 +51,13 @@ spec:
         config:
           path: ./out
           message: "chore: promote to uat"
-      
+
       # Step 6: Push changes to stage/uat branch
       - uses: git-push
         config:
           path: ./out
           targetBranch: stage/uat
-      
+
       # Step 7: Update ArgoCD Application
       - uses: argocd-update
         config:
