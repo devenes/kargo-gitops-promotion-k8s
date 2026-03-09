@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: frontend
+    environment: prod
+    stage: prod
+  name: frontend
+  namespace: kargo-lab-prod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+      environment: prod
+      stage: prod
+  template:
+    metadata:
+      labels:
+        app: frontend
+        environment: prod
+        stage: prod
+    spec:
+      containers:
+      - image: nginx:1.25-alpine
+        name: frontend
+        ports:
+        - containerPort: 80
+          name: http
+        securityContext:
+          allowPrivilegeEscalation: false
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: html
+      volumes:
+      - configMap:
+          name: frontend-html
+        name: html
