@@ -1,0 +1,15 @@
+# Kargo Warehouse for frontend app artifacts
+# Tracks changes to the master branch (git root)
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: frontend-app
+  namespace: kargo-lab
+spec:
+  interval: 5m
+  subscriptions:
+  - git:
+      repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+      branch: master
+      includePaths:
+      - frontend/

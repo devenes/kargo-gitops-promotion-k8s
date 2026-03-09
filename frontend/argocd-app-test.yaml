@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: frontend-test
+  namespace: argocd
+  annotations:
+    kargo.akuity.io/authorized-stage: kargo-lab:frontend-test
+  labels:
+    app.kubernetes.io/name: frontend
+    app.kubernetes.io/instance: test
+    app.kubernetes.io/managed-by: kargo
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+    targetRevision: stage/frontend-test
+    path: .
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kargo-lab-test
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

@@ -19,3 +19,12 @@ spec:
   # Production stage: NO auto-promotion (requires manual approval)
   # Note: prod is intentionally NOT listed here to enforce manual gates
 
+  # Frontend pipeline stages
+  - stage: frontend-test
+    autoPromotionEnabled: true
+
+  - stage: frontend-uat
+    autoPromotionEnabled: true
+
+  # frontend-prod: NO auto-promotion (requires manual approval)
+

@@ -1,0 +1,62 @@
+# Kargo Stage for frontend test environment
+# Receives Freight directly from the frontend-app Warehouse (auto-promoted)
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: frontend-test
+  namespace: kargo-lab
+  labels:
+    environment: test
+    app: frontend
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: frontend-app
+    sources:
+      direct: true
+
+  promotionTemplate:
+    spec:
+      steps:
+
+      # Step 1: Clone Git repositories
+      - uses: git-clone
+        config:
+          repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+          checkout:
+          - branch: master
+            path: ./src
+          - branch: stage/frontend-test
+            create: true
+            path: ./out
+
+      # Step 2: Clear the output directory
+      - uses: git-clear
+        config:
+          path: ./out
+
+      # Step 3: Build Kustomize manifests
+      - uses: kustomize-build
+        config:
+          path: ./src/frontend/stages/test
+          outPath: ./out
+
+      # Step 4: Commit changes to Git
+      - uses: git-commit
+        config:
+          path: ./out
+          message: "chore: promote frontend to test"
+
+      # Step 5: Push changes to stage/frontend-test branch
+      - uses: git-push
+        config:
+          path: ./out
+          targetBranch: stage/frontend-test
+
+      # Step 6: Update ArgoCD Application
+      - uses: argocd-update
+        config:
+          apps:
+          - name: frontend-test
+            namespace: argocd

@@ -1,0 +1,63 @@
+# Kargo Stage for frontend UAT environment
+# Receives Freight from the frontend-test stage (auto-promoted)
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: frontend-uat
+  namespace: kargo-lab
+  labels:
+    environment: uat
+    app: frontend
+spec:
+  requestedFreight:
+  - origin:
+      kind: Warehouse
+      name: frontend-app
+    sources:
+      stages:
+      - frontend-test
+
+  promotionTemplate:
+    spec:
+      steps:
+
+      # Step 1: Clone Git repositories
+      - uses: git-clone
+        config:
+          repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
+          checkout:
+          - branch: master
+            path: ./src
+          - branch: stage/frontend-uat
+            create: true
+            path: ./out
+
+      # Step 2: Clear the output directory
+      - uses: git-clear
+        config:
+          path: ./out
+
+      # Step 3: Build Kustomize manifests
+      - uses: kustomize-build
+        config:
+          path: ./src/frontend/stages/uat
+          outPath: ./out
+
+      # Step 4: Commit changes to Git
+      - uses: git-commit
+        config:
+          path: ./out
+          message: "chore: promote frontend to uat"
+
+      # Step 5: Push changes to stage/frontend-uat branch
+      - uses: git-push
+        config:
+          path: ./out
+          targetBranch: stage/frontend-uat
+
+      # Step 6: Update ArgoCD Application
+      - uses: argocd-update
+        config:
+          apps:
+          - name: frontend-uat
+            namespace: argocd
