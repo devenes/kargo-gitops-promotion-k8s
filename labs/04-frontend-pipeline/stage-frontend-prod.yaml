@@ -11,6 +11,8 @@ kind: Stage
 metadata:
   name: frontend-prod
   namespace: kargo-lab
+  annotations:
+    kargo.akuity.io/color: violet
   labels:
     environment: prod
     app: frontend

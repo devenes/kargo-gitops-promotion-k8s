@@ -5,6 +5,8 @@ kind: Stage
 metadata:
   name: test
   namespace: kargo-lab
+  annotations:
+    kargo.akuity.io/color: cyan
   labels:
     environment: test
 spec:

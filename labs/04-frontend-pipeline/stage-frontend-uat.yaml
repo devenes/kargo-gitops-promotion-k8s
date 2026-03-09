@@ -8,6 +8,8 @@ kind: Stage
 metadata:
   name: frontend-uat
   namespace: kargo-lab
+  annotations:
+    kargo.akuity.io/color: amber
   labels:
     environment: uat
     app: frontend

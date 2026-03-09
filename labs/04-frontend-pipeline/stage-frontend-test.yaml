@@ -9,6 +9,8 @@ kind: Stage
 metadata:
   name: frontend-test
   namespace: kargo-lab
+  annotations:
+    kargo.akuity.io/color: cyan
   labels:
     environment: test
     app: frontend
