@@ -49,22 +49,12 @@ spec:
           path: ./src/frontend/stages/uat
           outPath: ./out
 
-      # Step 4: Stamp promotion metadata into a version.yaml file
-      # Teaches: yaml-update step for writing non-Kustomize config values
-      # Useful for tracking which commit is deployed in each environment
-      - uses: yaml-update
-        as: version-stamp
-        config:
-          path: ./out/version.yaml
-          updates:
-          - key: promoted.commit
-            value: ${{ commitFrom("https://github.com/devenes/kargo-gitops-promotion-k8s", "master").ID }}
-          - key: promoted.stage
-            value: uat
-          - key: promoted.branch
-            value: stage/frontend-uat
+      # Step 4 (TODO after push): yaml-update stamps commit/stage/branch into
+      # the version ConfigMap. Requires version.yaml to be in kustomization.yaml
+      # so kustomize-build emits kargo-lab-uat-configmap-frontend-version.yaml.
+      # Will be re-enabled once changes are pushed to master.
 
-      # Step 5: Commit rendered manifests + version stamp
+      # Step 5: Commit rendered manifests
       - uses: git-commit
         as: commit
         config:

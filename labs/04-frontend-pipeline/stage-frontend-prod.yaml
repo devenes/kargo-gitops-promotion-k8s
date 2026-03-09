@@ -53,17 +53,23 @@ spec:
           path: ./src/frontend/stages/prod
           outPath: ./out
 
-      # Step 4: Stamp promotion metadata
+      # Step 4a: Copy the version ConfigMap into the output directory
+      - uses: copy
+        config:
+          inPath: ./src/frontend/base/version.yaml
+          outPath: ./out/kargo-lab-prod-configmap-frontend-version.yaml
+
+      # Step 4b: Stamp promotion metadata into the version ConfigMap
       - uses: yaml-update
         as: version-stamp
         config:
-          path: ./out/version.yaml
+          path: ./out/kargo-lab-prod-configmap-frontend-version.yaml
           updates:
-          - key: promoted.commit
-            value: ${{ commitFrom("https://github.com/devenes/kargo-gitops-promotion-k8s", "master").ID }}
-          - key: promoted.stage
+          - key: data.commit
+            value: ${{ commitFrom("https://github.com/devenes/kargo-gitops-promotion-k8s").ID }}
+          - key: data.stage
             value: prod
-          - key: promoted.branch
+          - key: data.branch
             value: stage/frontend-prod
 
       # Step 5: Commit rendered manifests to the PR branch
@@ -82,7 +88,7 @@ spec:
           repoURL: https://github.com/devenes/kargo-gitops-promotion-k8s
           sourceBranch: ${{ outputs.push.branch }}   # ← step output expression
           targetBranch: stage/frontend-prod
-          title: "chore: promote frontend to prod [${{ commitFrom('https://github.com/devenes/kargo-gitops-promotion-k8s', 'master').ShortID }}]"
+          title: "chore: promote frontend to prod [${{ commitFrom('https://github.com/devenes/kargo-gitops-promotion-k8s').ID }}]"
           createTargetBranch: true
 
       # Step 7: Wait for the PR to be merged before continuing
