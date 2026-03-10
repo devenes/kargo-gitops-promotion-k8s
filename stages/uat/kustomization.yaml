@@ -24,3 +24,14 @@ replicas:
 commonAnnotations:
   kargo.akuity.io/stage: uat
 
+# Patch Route backend: namePrefix renames the Service to uat-demo-app
+# but does NOT update spec.to.name inside the Route manifest automatically
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/to/name
+      value: uat-demo-app
+  target:
+    kind: Route
+    name: demo-app
+

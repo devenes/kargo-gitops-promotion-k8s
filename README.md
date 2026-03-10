@@ -1,13 +1,13 @@
 # Kargo GitOps Promotion Pipelines
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![OpenShift](https://img.shields.io/badge/openshift-4.14+-820000.svg?labelColor=grey&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAWCAYAAADafVyIAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAAEe0lEQVRIDYWVbWjWZRTGr//zPDbds7lcijhQl6gUYpk6P9iXZi8Kor348kEYCCFFbWlLEeyDIz9opB/KD6VpfgpERZGJkA3nYAq+VBoKmpa6pjOt1tzb49pcv+v+79lmDTrs3n3f5z73dc65zvnfT6R/Sa2UKpW6rb4gpf+WXmA5r1d6JpKKWacZ91hfQ3cuIX07kxmd2LOVOHvo2cJ6QAaDn5EWYf0+BqUjMelhPGDY82OMHAaAapXuM+1nbJ0tXWaWcepwUoVJv4MsOMrEQukjDj4swLglxulKgmlQh2gnmT79MPR57JulX3FYUSIdZtsvwQEHSRYO0rl+RsQVnayhpx3QtCNu4w+7RkYG28dRFTszh4+0jZDycJpBVzZFOoDO2L0RFxKsAmeAVxLNtnafYJwvDYeCJrZfsj/GaMCwi/1IMnqae8tZryDTyMpcxnX+vpOqsZ1OFB/bQYgezmeQ/gkiLnAkBsdRHYDlpH2Ru0MK91bibA12VynAkzidRTbZeq12GkGI/nM8vv2X1EEWuVDCXb1G4ZoIIiKqVJ+pfmE/iSQ5g0XpEnWfRmbbpSVks4FAD0PrIY6uBwc/wCcFOEnBiojERTTPrwJw7CpF5LwbLkKNDJgVZ4/jBPN4QF/mzrvcr+feO1kb9KEAM0mzCB67c9mzrja4z45zPBR4LRkB2AP4JOYaivvFKHhn/dL30kTfdWbBAeun3IJwkHKxiOIkk3ZA1VsxDdwbWtqkmxxednq/45DgpsDEVFvfBSo4cIpwF9rjNp1HPSq3wCHZWG1H/fx7b6kLcfAVQifbehcW3pP+Ru5Iy3ZJn4A1N1EFh9w+3yDtOU+fN9KCpDphnFRIsf05OBxieFQ2okMZMiPj34j+2j2K+jNmf0iriqS10FYYDLJXv+KTJ4rR0LWDyyfgnmD+VyK4HtXOB/mT9OkY6XUwREadUDUvBR2j2bs4bxJJZ0nIOgbdR8pDFXiwy1q6jBb9sw4Hk6XZZB2Ed6uJHm700/ANrdZzm5RZ32GNXeAkZAdAKktFfHXgP/YEGQvrTVdijAdk0ntW2usTPxNJuErc4mGEmrFUfZ0PcJSqpotKaV17Okqkfc6Snr2nlcOHhu18TN5ztQkm6Rmcg0yK6NkXaa2atHcIrdVGsXYzFw8HBC7XL5V+jE//+x/wNwDdjl0RHdFOg6R5DWqgaPFcKI8cTZ60Eyfjmvkh4XUsc8R0lp6I8W5StD30+VF0N6hTF8OP3TTm5diuADzH4ASZptitnC14TjrlbIylein/eXujFod4OYspOID+sciQxQgM3ez41y3WGdIvYJ4AYA6R+mnpYJ0LuO+UzZK+Rq0qlwDDCKUxgrAYdkHaDMgHbje+VNcgQTU9QuMTefgoAfZZyl9jC+xyt5y67GdrwPAzwLnkdhzT99GUhoCks7yMHK3HSYkduZpdDKQb5ynroEId8ct8gIw3zwnPzwC4jYMDL7IyuPcv8SsFwHwAXyGiZ7GZysjnkqmiK8OTfoSoT/s+OuOZEScZ5B8k9mbxjgrnPgAAAABJRU5ErkJggg==)](https://www.openshift.com/)
-[![Kargo](https://img.shields.io/badge/kargo-1.9.3-orange)](https://kargo.io/)
-[![ArgoCD](https://img.shields.io/badge/ArgoCD-2.13.3-yellow)](https://argo-cd.readthedocs.io/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)](LICENSE)
+[![OpenShift](https://img.shields.io/badge/openshift-4.10+-darkred?logo=redhatopenshift)](https://docs.openshift.com/container-platform/)
+[![Kargo](https://img.shields.io/badge/kargo-1.9.3-yellow)](https://kargo.io/)
+[![ArgoCD](https://img.shields.io/badge/ArgoCD-2.13.3-orange?logo=argo)](https://argo-cd.readthedocs.io/)
 
 **Learn Kargo by building** Progressive delivery pipelines on OpenShift, from zero to multi-stage promotion in hands-on labs.
 
-![Kargo UI](./docs/kargo-ui.jpg)
+![Kargo UI](./docs/kargo-1.png)
 
 ## 📋 Table of Contents
 
@@ -38,6 +38,8 @@ A **multi-application, multi-stage promotion pipeline** featuring:
 - **Manual Gates**: Production requires approval
 - **GitOps Integration**: Full ArgoCD synchronization
 - **Stage-specific Branches**: Isolated configuration per environment
+
+![Kargo UI](./docs/kargo-ui.jpg)
 
 ### What Makes This Different
 
@@ -469,91 +471,6 @@ bash labs/02-first-stage/verify.sh
 
 # Verify Lab 03
 bash labs/03-multi-stage-pipeline/verify.sh
-```
-
-## 📁 Repository Structure
-
-```
-kargo-gitops-promotion-k8s/
-├── README.md                           # This file
-├── LICENSE                             # Apache 2.0
-│
-├── setup/                              # Installation & configuration
-│   ├── install.sh                      # One-command infrastructure setup
-│   ├── uninstall.sh                    # Clean teardown
-│   ├── prerequisites.sh                # Tool verification
-│   └── configure-git-credentials.sh    # Git auth helper
-│
-├── infrastructure/                     # Core platform components
-│   ├── argocd/                         # ArgoCD v2.13.3
-│   │   ├── install.yaml
-│   │   ├── namespace.yaml
-│   │   ├── route.yaml
-│   │   └── scc-patch.yaml
-│   ├── cert-manager/                   # cert-manager v1.16.3
-│   │   ├── namespace.yaml
-│   │   └── values.yaml
-│   └── kargo/                          # Kargo v1.9.3
-│       ├── namespace.yaml
-│       ├── values.yaml
-│       ├── route.yaml
-│       └── openshift-rbac-patch.yaml
-│
-├── base/                               # Demo app Kustomize base
-│   ├── deployment.yaml                 # nginx deployment
-│   ├── service.yaml
-│   ├── route.yaml
-│   └── kustomization.yaml
-│
-├── stages/                             # Environment-specific overlays
-│   ├── test/                           # 1 replica
-│   ├── uat/                            # 2 replicas
-│   └── prod/                           # 3 replicas (HA)
-│
-├── frontend/                           # Frontend application
-│   ├── warehouse.yaml                  # Frontend Warehouse
-│   ├── argocd-app-*.yaml              # ArgoCD Applications
-│   ├── base/                           # Base manifests
-│   └── stages/                         # Environment overlays
-│
-├── database/                           # Database application
-│   ├── warehouse.yaml                  # Database Warehouse
-│   ├── argocd-app-*.yaml              # ArgoCD Applications
-│   ├── base/                           # Base manifests
-│   └── stages/                         # Environment overlays
-│
-├── labs/                               # Hands-on learning labs
-│   ├── 01-warehouse-and-freight/
-│   │   ├── README.md                   # Step-by-step guide
-│   │   ├── project.yaml                # Kargo Project
-│   │   ├── warehouse.yaml              # Warehouse config
-│   │   └── verify.sh                   # Automated verification
-│   ├── 02-first-stage/
-│   │   ├── README.md
-│   │   ├── stage-test.yaml             # TEST Stage
-│   │   ├── argocd-app-test.yaml        # ArgoCD Application
-│   │   ├── setup.sh
-│   │   └── verify.sh
-│   ├── 03-multi-stage-pipeline/
-│   │   ├── README.md
-│   │   ├── stage-uat.yaml              # UAT Stage
-│   │   ├── stage-prod.yaml             # PROD Stage
-│   │   ├── argocd-app-uat.yaml
-│   │   ├── argocd-app-prod.yaml
-│   │   ├── project-updated.yaml        # Auto-promotion config
-│   │   ├── setup.sh
-│   │   └── verify.sh
-│   └── 04-frontend-pipeline/
-│       ├── stage-frontend-test.yaml
-│       ├── stage-frontend-uat.yaml
-│       └── stage-frontend-prod.yaml
-│
-├── scripts/                            # Utility scripts
-│   ├── promote.sh                      # Manual promotion helper
-│   └── freight-status.sh               # Freight inspection
-│
-└── docs/                               # Documentation assets
-    └── kargo-ui.jpg                    # UI screenshot
 ```
 
 ## 🔑 Key Concepts
