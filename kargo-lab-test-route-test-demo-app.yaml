@@ -21,6 +21,6 @@ spec:
     termination: edge
   to:
     kind: Service
-    name: demo-app
+    name: test-demo-app
     weight: 100
   wildcardPolicy: None
